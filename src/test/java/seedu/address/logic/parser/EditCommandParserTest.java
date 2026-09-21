@@ -25,6 +25,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -53,6 +54,21 @@ public class EditCommandParserTest {
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
 
     private EditCommandParser parser = new EditCommandParser();
+
+    @Test
+    public void parse_remarkOnly_success() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark("Likes baseball").build();
+        assertParseSuccess(parser, "1 r/  Likes baseball  ", new EditCommand(INDEX_FIRST_PERSON, descriptor));
+
+        EditPersonDescriptor emptyRemarkDescriptor = new EditPersonDescriptorBuilder().withRemark("").build();
+        assertParseSuccess(parser, "1 r/", new EditCommand(INDEX_FIRST_PERSON, emptyRemarkDescriptor));
+    }
+
+    @Test
+    public void parse_repeatedRemark_failure() {
+        assertParseFailure(parser, "1 r/first r/second",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+    }
 
     @Test
     public void parse_missingParts_failure() {

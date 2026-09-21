@@ -28,6 +28,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalPersons.AMY;
@@ -47,6 +48,23 @@ import seedu.address.testutil.PersonBuilder;
 
 public class AddCommandParserTest {
     private AddCommandParser parser = new AddCommandParser();
+
+    @Test
+    public void parse_remark_success() {
+        String personDetails = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + TAG_DESC_FRIEND;
+        Person expectedPerson = new PersonBuilder(BOB).withTags(VALID_TAG_FRIEND).withRemark("Likes baseball").build();
+        assertParseSuccess(parser, personDetails + " r/  Likes baseball  ", new AddCommand(expectedPerson));
+
+        Person emptyRemarkPerson = new PersonBuilder(expectedPerson).withRemark("").build();
+        assertParseSuccess(parser, personDetails + " r/", new AddCommand(emptyRemarkPerson));
+    }
+
+    @Test
+    public void parse_repeatedRemark_failure() {
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + " r/first r/second", Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+    }
 
     @Test
     public void parse_allFieldsPresent_success() {
